@@ -34,7 +34,7 @@ public class CludeoTests {
 		List<String> roomnames = new ArrayList<String>(Arrays.asList("Kitchen", "Ballroom", "Conservatory", "Billiard Room", "Library", "Study", "Hall", "Lounge", "Dining Room"));
 	    for(int i = 0; i<9; i++) {
 	    	assertTrue(game.rooms.get(i).getName() == roomnames.get(i));
-	    	assertTrue(!game.rooms.get(i).entrys.isEmpty());
+	    	assertTrue(!game.rooms.get(i).getEntrys().isEmpty());
 	    }
 	}
 
@@ -55,7 +55,7 @@ public class CludeoTests {
 		for(int i = 0; i<6; i++) {
 			assertTrue(weaponnames.get(i).equals(game.weapons.get(i).getName()));
 		}
-		game.placeWeapons(game);
+		game.placeWeapons();
 		for(int i = 0; i<6; i++) {
 			assertTrue(game.weapons.get(i).getLocation() != null);
 		}
@@ -71,12 +71,12 @@ public class CludeoTests {
 		for(int i = 0; i< 6; i++) {
 			assertTrue(game.people.get(i).getName().equals(personnames.get(i)));
 		}
-		assertTrue(game.people.get(0).getStart().equals(game.getBoard().getLocation(24, 7)));
-		assertTrue(game.people.get(1).getStart().equals(game.getBoard().getLocation(17, 0)));
-		assertTrue(game.people.get(2).getStart().equals(game.getBoard().getLocation(0, 9)));
-		assertTrue(game.people.get(3).getStart().equals(game.getBoard().getLocation(0, 14)));
-		assertTrue(game.people.get(4).getStart().equals(game.getBoard().getLocation(6, 23)));
-		assertTrue(game.people.get(5).getStart().equals(game.getBoard().getLocation(19, 23)));
+		assertTrue(game.people.get(0).getLocation().equals(game.getBoard().getLocation(24, 7)));
+		assertTrue(game.people.get(1).getLocation().equals(game.getBoard().getLocation(17, 0)));
+		assertTrue(game.people.get(2).getLocation().equals(game.getBoard().getLocation(0, 9)));
+		assertTrue(game.people.get(3).getLocation().equals(game.getBoard().getLocation(0, 14)));
+		assertTrue(game.people.get(4).getLocation().equals(game.getBoard().getLocation(6, 23)));
+		assertTrue(game.people.get(5).getLocation().equals(game.getBoard().getLocation(19, 23)));
 	}
 
 	@Test
@@ -95,7 +95,8 @@ public class CludeoTests {
 		game.initiliseBoard();
 		game.initiliseWeapons();
 		game.initilisePersons();
-		game.createPlayers();
+		game.players.add(new Player("dude", game.people.get(0)));
+		game.players.add(new Player("dudette", game.people.get(1)));
 	    List<Room> allrooms = game.rooms;
 	    List<Weapon> allweapons = game.weapons;
 	    List<Person> allpersons = game.people;
@@ -115,7 +116,8 @@ public class CludeoTests {
 		game.initiliseBoard();
 		game.initiliseWeapons();
 		game.initilisePersons();
-		game.createPlayers();
+		game.players.add(new Player("dude", game.people.get(0)));
+		game.players.add(new Player("dudette", game.people.get(1)));
 	    List<Room> allrooms = game.rooms;
 	    List<Weapon> allweapons = game.weapons;
 	    List<Person> allpersons = game.people;
@@ -152,104 +154,71 @@ public class CludeoTests {
 	}
 
 	@Test
-	//Tests the diceroll gives us a int between 2 and 12
-	//Ill run this a few times to give a range of possible results
-	void testDiceRoll() {
-		Game game = new Game();
-		int roll = game.diceRoll();
-		assertTrue(roll >= 2 && roll <= 12);
-		System.out.println(roll);
-		roll = game.diceRoll();
-		assertTrue(roll >= 2 && roll <= 12);
-		System.out.println(roll);
-		roll = game.diceRoll();
-		assertTrue(roll >= 2 && roll <= 12);
-		System.out.println(roll);
-	}
-
-	@Test
-	//Tests discoverSuggestion(), to make sure correct objects are chosen and returned
-	void testDiscoverSuggestion() {
+	//Tests a correct accusation
+	void testCorrectAccustaion() {
 		Game game = new Game();
 		game.initiliseBoard();
 		game.initiliseWeapons();
 		game.initilisePersons();
-		game.createPlayers();
-		Player p = new Player(game.people.get(0));
-		p.setLocation(game.getBoard().getLocation(2, 3));
-		Object choices[] = new Object[3];
-		//For this test to pass, make sure the correct obejects you enter are "Dagger" and "Mr Green"
-		choices = game.discoverSuggestion(game, p);
-		assertTrue(choices[0] instanceof Room);
-		assertTrue(((Room) choices[0]).getName().equals("Kitchen"));
-		assertTrue(choices[1] instanceof Weapon);
-		assertTrue(((Weapon) choices[1]).getName().equals("Dagger"));
-		assertTrue(choices[2] instanceof Person);
-		assertTrue(((Person) choices[2]).getName().equals("Mr Green"));
+		game.players.add(new Player("dude", game.people.get(0)));
+		game.players.add(new Player("dudette", game.people.get(1)));
+	    String correctroom = game.rooms.get(0).getName();
+	    String correctweapon = game.weapons.get(0).getName();
+	    String correctperson = game.people.get(0).getName();
+	    game.murderinfo[0] = game.rooms.get(0);
+	    game.murderinfo[1] = game.weapons.get(0);
+	    game.murderinfo[2] = game.people.get(0);
+	    assertTrue(game.refuteAccusation(correctroom, correctweapon, correctperson));
 	}
 
 	@Test
-	//Tests the that a refuted suggestion has the proper results
-    void testRefutedSuggestion() {
-
-	}
-
-	@Test
-	//Tests discoverAccusation(), to make sure the correct objects are chosen and returned
-    void testDiscoverAccusation() {
+	//Tests a incorrect accusation
+	void testIncorrectAccustaion() {
 		Game game = new Game();
 		game.initiliseBoard();
 		game.initiliseWeapons();
 		game.initilisePersons();
-		Player p = new Player(game.people.get(0));
-		Object choices[] = new Object[3];
-		//For this test to pass, make sure the correct obejects you enter are "Kitchen", "Dagger" and "Mr Green"
-		choices = game.discoverAccusation(game, p);
-		assertTrue(choices[0] instanceof Room);
-		assertTrue(((Room) choices[0]).getName().equals("Kitchen"));
-		assertTrue(choices[1] instanceof Weapon);
-		assertTrue(((Weapon) choices[1]).getName().equals("Dagger"));
-		assertTrue(choices[2] instanceof Person);
-		assertTrue(((Person) choices[2]).getName().equals("Mr Green"));
+		game.players.add(new Player("dude", game.people.get(0)));
+		game.players.add(new Player("dudette", game.people.get(1)));
+	    String correctroom = game.rooms.get(1).getName();
+	    String correctweapon = game.weapons.get(1).getName();
+	    String correctperson = game.people.get(0).getName();
+	    game.murderinfo[0] = game.rooms.get(0);
+	    game.murderinfo[1] = game.weapons.get(0);
+	    game.murderinfo[2] = game.people.get(0);
+	    assertFalse(game.refuteAccusation(correctroom, correctweapon, correctperson));
 	}
 
 	@Test
-	//Tests that a successfull accusation has a proper results
-	void testSuccesfullAccusation() {
-		Game game = new Game();
-		game.initiliseBoard();
-		game.initiliseWeapons();
-		game.initilisePersons();
-		Object murder[] = new Object[3];
-		Object choices[] = new Object[3];
-		murder[0] = game.rooms.get(0);
-		murder[1] = game.weapons.get(0);
-		murder[2] = game.people.get(0);
-		choices[0] = game.rooms.get(0);
-		choices[1] = game.weapons.get(0);
-		choices[2] = game.people.get(0);
-		game.murderinfo = murder;
-		assertTrue(game.resolveAccusation(choices, game));
+	//tests so movement commands
+	void testMovement1() {
+	Game game = new Game();
+	game.initiliseBoard();
+	game.initiliseWeapons();
+	game.initilisePersons();
+	game.players.add(new Player("dude", game.people.get(0)));
+	Location ogloc = game.players.get(0).getLocation();
+	game.movePlayer(game.players.get(0),"N");
+	game.movePlayer(game.players.get(0), "N");
+	assertTrue(game.players.get(0).getLocation().equals(game.getBoard().getLocation(ogloc.x - 2, ogloc.y)));
 	}
 
 	@Test
-	//Tests that a wrong accusation has a proper results
-	void testWrongAccusation() {
-		Game game = new Game();
-		game.initiliseBoard();
-		game.initiliseWeapons();
-		game.initilisePersons();
-		Object murder[] = new Object[3];
-		Object choices[] = new Object[3];
-		murder[0] = game.rooms.get(0);
-		murder[1] = game.weapons.get(0);
-		murder[2] = game.people.get(1);
-		choices[0] = game.rooms.get(0);
-		choices[1] = game.weapons.get(0);
-		choices[2] = game.people.get(0);
-		game.murderinfo = murder;
-		assertFalse(game.resolveAccusation(choices, game));
+	//tests some movement commands that shouldnt go through
+	void testMovement2() {
+	Game game = new Game();
+	game.initiliseBoard();
+	game.initiliseWeapons();
+	game.initilisePersons();
+	game.players.add(new Player("dude", game.people.get(0)));
+	Location ogloc = game.players.get(0).getLocation();
+	game.movePlayer(game.players.get(0),"W");
+	game.movePlayer(game.players.get(0), "W");
+	assertFalse(game.players.get(0).getLocation().equals(game.getBoard().getLocation(ogloc.x, ogloc.y -2)));
+	assertTrue(game.players.get(0).getLocation().equals(ogloc));
 	}
+	
+	
 
 
 
