@@ -40,9 +40,10 @@ public class Board {
 			}
 		}
 		for (int j = 10; j < 14; j++) {
-			board[2][j].setRoom(rooms.get(1));
+			board[1][j].setRoom(rooms.get(1));
 			rooms.get(1).getEntrys().add(board[2][j]);
 		}
+		
 		board[5][8].setIsDoor(true);
 		board[7][9].setIsDoor(true);
 		board[7][14].setIsDoor(true);
@@ -88,7 +89,7 @@ public class Board {
 		}
 	    board[21][17].setIsDoor(true);
 		// Hall
-		for (int i = 18; i < 25; i++) {
+		for (int i = 17; i < 25; i++) {
 			for (int j = 9; j < 15; j++) {
 				board[i][j].setRoom(rooms.get(6));
 				rooms.get(6).getEntrys().add(board[i][j]);
@@ -98,7 +99,7 @@ public class Board {
 	    board[17][11].setIsDoor(true);
 		board[17][12].setIsDoor(true);
 		// Lounge
-		for (int i = 19; i < 25; i++) {
+		for (int i = 18; i < 25; i++) {
 			for (int j = 0; j < 7; j++) {
 				board[i][j].setRoom(rooms.get(7));
 				rooms.get(7).getEntrys().add(board[i][j]);
