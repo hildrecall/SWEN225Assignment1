@@ -251,21 +251,17 @@ public class GUI extends JFrame {
 		//creating the bottom display panels
 		frame.getContentPane().add(controls, BorderLayout.NORTH);
 
-		JSplitPane splitPane = new JSplitPane();
-		frame.getContentPane().add(splitPane, BorderLayout.SOUTH);
-		splitPane.setLayout(new FlowLayout());
-		splitPane.setSize(200, 100);
+		JPanel splitpane = new JPanel();
+		frame.getContentPane().add(splitpane, BorderLayout.SOUTH);
+		splitpane.setLayout(new GridLayout(1, 2));
 
-        JPanel rpanel = new JPanel();
-		splitPane.setRightComponent(rpanel);
-		JTextArea rpaneltext = new JTextArea();
-		rpanel.add(rpaneltext);
-
-		JPanel lpanel = new JPanel();
-		splitPane.setLeftComponent(lpanel);
-		splitPane.setDividerLocation(500);
 		JTextArea lpaneltext = new JTextArea();
-		lpanel.add(lpaneltext);
+		splitpane.add(lpaneltext);
+
+		JTextArea rpaneltext = new JTextArea();
+		splitpane.add(rpaneltext);
+
+
 
 		JPanel drawing = new JPanel();
 		frame.getContentPane().add(drawing, BorderLayout.CENTER);
@@ -344,6 +340,7 @@ public class GUI extends JFrame {
 							"Select your character",
 							JOptionPane.PLAIN_MESSAGE);
 					//make the chosen radio button unvisable and create the new player
+					System.out.println(scarlett.isSelected());
 					if(scarlett.isSelected()) {
 						scarlett.setVisible(false);
 						game.createNewPlayer(name, personoptions.get(0));
@@ -404,10 +401,12 @@ public class GUI extends JFrame {
      				for(Room r : game.currentplayer.knownrooms) {
      					rpaneltext.append(r.getName() + " ");
      				}
+     				rpaneltext.append("\n");
      				rpaneltext.append("Weapons : ");
      				for(Weapon w : game.currentplayer.knownweapons) {
      					rpaneltext.append(w.getName() + " ");
      				}
+     				rpaneltext.append("\n");
      				rpaneltext.append("Persons : ");
      				for(Person p : game.currentplayer.knownpersons) {
      					rpaneltext.append(p.getName() + " ");
